@@ -1,0 +1,44 @@
+from abc import ABC, abstractmethod
+
+def my_decorador(func):
+  def wrapper(*args, **kwargs):
+    print("Decorador antes de llamar a saludo")
+    result = func(*args, **kwargs)
+    print("Decorador: despues de llamar a la funcion saludo")
+    return result
+  return wrapper  
+
+
+class Animal(ABC):
+  def __init__(self, patas, color_pelo):
+    self.patas = patas;
+    self.color_pelo = color_pelo;
+  
+  @abstractmethod ##obliga a desarrollar el metodo
+  def saludo(self):
+    pass  
+
+class Perro(Animal):
+  def __init__(self, patas, color_pelo, raza):
+    super().__init__(patas, color_pelo);
+    self.raza = raza
+  
+  @my_decorador
+  def saludo(self):
+    print("Hola soy un perro");
+
+class Gato(Animal):
+  def __init__(self, patas, color_pelo, peso):
+    super().__init__(patas, color_pelo);
+    self.peso = peso;
+
+  def saludo(self):
+    print("Hola soy un gato") 
+
+
+
+
+perro1 = Perro(4,'negro', 'salchicha')
+perro1.saludo()
+gato1 = Gato(4, 'rayado rubio', 4)
+gato1.saludo()
