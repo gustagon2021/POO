@@ -1,0 +1,58 @@
+from abc import ABC, abstractmethod
+
+# Definimos un decorador simple
+def mi_decorador(funcion):
+    def envoltura(*args, **kwargs):
+        print("Decorador: Antes de llamar a la función saludo")
+        resultado = funcion(*args, **kwargs)
+        print("Decorador: Después de llamar a la función saludo")
+        return resultado
+    return envoltura
+
+# Definimos una metaclase que se asegura de que las subclases implementen el método 'saludo'
+class MetaAnimal(type):
+    def __new__(cls, name, bases, dct):
+        # Crear la nueva clase
+        nueva_clase = super().__new__(cls, name, bases, dct)
+        
+        # Verificar si la clase es abstracta
+        if not hasattr(nueva_clase, 'saludo'):
+            raise TypeError(f"La clase {name} debe implementar el método saludo")
+        
+        # Aplicar el decorador automáticamente al método saludo si existe
+        if 'saludo' in dct:
+            original_saludo = dct['saludo']
+            nueva_clase.saludo = mi_decorador(original_saludo)
+        
+        return nueva_clase
+
+class Animal(ABC, metaclass=MetaAnimal):
+    def __init__(self, patas, color_pelo):
+        self.patas = patas
+        self.color_pelo = color_pelo
+
+    @abstractmethod
+    def saludo(self):
+        pass
+
+class Perro(Animal):
+    def __init__(self, patas, color_pelo, raza):
+        super().__init__(patas, color_pelo)
+        self.raza = raza
+
+    def saludo(self):
+        print("Hola soy un perro")
+
+class Gato(Animal):
+    def __init__(self, patas, color_pelo, peso):
+        super().__init__(patas, color_pelo)
+        self.peso = peso
+
+    def saludo(self):
+        print("Hola soy un gato")
+
+# Creación de instancias para probar
+perro1 = Perro(4, 'negro', 'salchicha')
+perro1.saludo()
+gato1 = Gato(4, 'rayado rubio', 4)
+gato1.saludo()
